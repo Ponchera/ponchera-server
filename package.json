@@ -17,7 +17,8 @@
   "dependencies": {
     "dotenv": "^4.0.0",
     "kamora": "^0.2.0",
-    "lodash": "^4.17.4"
+    "lodash": "^4.17.4",
+    "moment": "^2.20.1"
   },
   "devDependencies": {
     "eslint": "^4.16.0",
