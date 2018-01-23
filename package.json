@@ -1,0 +1,31 @@
+{
+  "name": "im-server",
+  "version": "0.1.0",
+  "description": "kamora 模板项目",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm run dev",
+    "dev": "./node_modules/.bin/nodemon --harmony index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AidenChen/im-server.git"
+  },
+  "author": "AidenChen",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^4.0.0",
+    "kamora": "^0.2.0",
+    "lodash": "^4.17.4"
+  },
+  "devDependencies": {
+    "eslint": "^4.16.0",
+    "eslint-config-standard": "^11.0.0-beta.0",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-node": "^5.2.1",
+    "eslint-plugin-promise": "^3.6.0",
+    "eslint-plugin-standard": "^3.0.1",
+    "nodemon": "^1.14.11"
+  }
+}
