@@ -10,10 +10,7 @@ const userSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'application'
   },
-  contacts: [{
-    type: Schema.Types.ObjectId,
-    ref: 'user'
-  }],
+  contacts: [String],
   conversations: [{
     type: Schema.Types.ObjectId,
     ref: 'conversation'

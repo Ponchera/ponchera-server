@@ -22,6 +22,7 @@ async function formatResponse (ctx, next) {
     if (err instanceof Kamora.Error) {
       err = formatError(err)
 
+      ctx.status = err.status
       ctx.body = {
         code: err.code,
         msg: err.message

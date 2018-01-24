@@ -16,7 +16,7 @@
   "license": "MIT",
   "dependencies": {
     "dotenv": "^4.0.0",
-    "kamora": "^0.2.0",
+    "kamora": "^0.3.0",
     "lodash": "^4.17.4",
     "moment": "^2.20.1"
   },
