@@ -5,7 +5,7 @@ const utilService = require('../services/util')
 const Application = Kamora.Database.model('application')
 
 exports.create = async (request) => {
-  const name = request.name
+  const name = request.body.name
 
   const applicationExists = await Application
     .findOne({ name })

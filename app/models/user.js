@@ -42,6 +42,9 @@ userSchema.set('toJSON', {
   transform: (doc, ret, options) => {
     ret.id = ret._id
     delete ret._id
+    delete ret.password
+    delete ret.contacts
+    delete ret.conversations
   }
 })
 

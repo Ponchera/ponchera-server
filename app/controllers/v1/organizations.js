@@ -15,7 +15,7 @@ router.push({
       }
     }),
     async (ctx, next) => {
-      ctx.body = await organizationRepository.create(ctx.filter.body)
+      ctx.body = await organizationRepository.create(ctx.filter)
 
       await next()
     }

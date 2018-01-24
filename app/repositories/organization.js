@@ -4,7 +4,7 @@ const error = require('../../config/error')
 const Organization = Kamora.Database.model('organization')
 
 exports.create = async (request) => {
-  const username = request.username
+  const username = request.body.username
 
   const organizationExists = await Organization
     .findOne({ username })
