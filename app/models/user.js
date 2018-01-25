@@ -6,6 +6,7 @@ const Schema = Kamora.Database.Schema
 const userSchema = new Schema({
   username: String,
   password: String,
+  socket_id: String,
   application_id: {
     type: Schema.Types.ObjectId,
     ref: 'application'
@@ -43,6 +44,7 @@ userSchema.set('toJSON', {
     ret.id = ret._id
     delete ret._id
     delete ret.password
+    delete ret.socket_id
     delete ret.contacts
     delete ret.conversations
   }

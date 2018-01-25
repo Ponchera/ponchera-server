@@ -20,7 +20,9 @@
     "jsonwebtoken": "^8.1.1",
     "kamora": "^0.3.0",
     "lodash": "^4.17.4",
-    "moment": "^2.20.1"
+    "moment": "^2.20.1",
+    "socket.io": "^2.0.4",
+    "socketio-jwt": "^4.5.0"
   },
   "devDependencies": {
     "eslint": "^4.16.0",
