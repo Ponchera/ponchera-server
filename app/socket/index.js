@@ -3,6 +3,7 @@ const io = require('socket.io')(Kamora.server)
 const socketioJwt = require('socketio-jwt')
 const jwtConfig = require('../../config/jwt')
 const authRepository = require('../repositories/auth')
+const messageRepository = require('../repositories/message')
 
 io.sockets
   .on('connection', socketioJwt.authorize({
@@ -11,19 +12,16 @@ io.sockets
     timeout: 15000
   }))
   .on('authenticated', function (socket) {
-    console.log('hello! ' + socket.decoded_token.uid + '/' + socket.id)
     authRepository.bindSocketIdToUser(socket.decoded_token.uid, socket.id)
       .catch(() => {
       })
 
-    socket.on('message', function (payloads) {
-      console.log(payloads)
-      io
-        .to(socket.id)
-        .emit('message', payloads)
+    socket.on('message', function (payload) {
+      messageRepository.sendMessage(io, payload)
+        .catch(() => {
+        })
     })
 
     socket.on('disconnect', function () {
-      console.log('off: ' + socket.id)
     })
   })

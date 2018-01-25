@@ -58,7 +58,7 @@ exports.login = async (request) => {
 
   return {
     user,
-    token: `Bearer ${token}`
+    token
   }
 }
 
