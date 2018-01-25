@@ -63,13 +63,12 @@ exports.login = async (request) => {
 }
 
 exports.bindSocketIdToUser = async (userId, socketId) => {
-  const user = await User
+  await User
     .findByIdAndUpdate(userId, {
-      socket_id: socketId
+      socket_id: socketId,
+      is_online: true
     })
     .catch(() => {
       throw new Kamora.Error(error.name.INTERNAL_SERVER_ERROR)
     })
-
-  return user
 }

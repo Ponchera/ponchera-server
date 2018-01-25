@@ -16,6 +16,7 @@ const userSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'conversation'
   }],
+  is_online: Boolean,
   created_at: {
     type: Date,
     default: Date.now(),

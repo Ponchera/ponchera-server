@@ -3,6 +3,7 @@ const io = require('socket.io')(Kamora.server)
 const socketioJwt = require('socketio-jwt')
 const jwtConfig = require('../../config/jwt')
 const authRepository = require('../repositories/auth')
+const userRepository = require('../repositories/user')
 const messageRepository = require('../repositories/message')
 
 io.sockets
@@ -23,5 +24,8 @@ io.sockets
     })
 
     socket.on('disconnect', function () {
+      userRepository.switchOnlineStatus(socket.id, false)
+        .catch(() => {
+        })
     })
   })
