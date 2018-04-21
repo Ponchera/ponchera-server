@@ -14,11 +14,14 @@ io.sockets
   }))
   .on('authenticated', function (socket) {
     authRepository.bindSocketIdToUser(socket.decoded_token.uid, socket.id)
+      .then(() => {
+        messageRepository.sendOfflineMessage(socket, socket.decoded_token.uid)
+      })
       .catch(() => {
       })
 
-    socket.on('message', function (payload) {
-      messageRepository.sendMessage(io, payload)
+    socket.on('message', function (payloads) {
+      messageRepository.sendMessage(io, payloads)
         .catch(() => {
         })
     })

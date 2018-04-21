@@ -11,5 +11,11 @@ module.exports = {
       username: process.env.DB_USERNAME || 'forge',
       password: process.env.DB_PASSWORD || 'forge'
     }
+  },
+  redis: {
+    host: process.env.REDIS_HOST || '127.0.0.1',
+    password: process.env.REDIS_PASSWORD || null,
+    port: process.env.REDIS_PORT || 6379,
+    database: 0
   }
 }
