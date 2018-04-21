@@ -66,4 +66,6 @@ exports.sendOfflineMessage = async (io, userId) => {
     io
       .emit('message', value)
   }
+
+  await redis.del(redisKey)
 }
