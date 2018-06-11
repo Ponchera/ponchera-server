@@ -12,7 +12,7 @@ exports.create = async (request) => {
       throw new Kamora.Error(error.name.INTERNAL_SERVER_ERROR)
     })
   if (organizationExists) {
-    throw new Kamora.Error(error.name.ALREADY_EXISTS, '', 400)
+    throw new Kamora.Error(error.name.ALREADY_EXISTS)
   }
 
   const organization = new Organization({

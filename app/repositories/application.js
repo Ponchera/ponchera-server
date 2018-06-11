@@ -13,7 +13,7 @@ exports.create = async (request) => {
       throw new Kamora.Error(error.name.INTERNAL_SERVER_ERROR)
     })
   if (applicationExists) {
-    throw new Kamora.Error(error.name.ALREADY_EXISTS, '', 400)
+    throw new Kamora.Error(error.name.ALREADY_EXISTS)
   }
 
   const application = new Application({

@@ -16,7 +16,7 @@ exports.register = async (request) => {
       throw new Kamora.Error(error.name.INTERNAL_SERVER_ERROR)
     })
   if (userExists) {
-    throw new Kamora.Error(error.name.ALREADY_EXISTS, '', 400)
+    throw new Kamora.Error(error.name.ALREADY_EXISTS)
   }
 
   const salt = await bcrypt.genSaltSync(10)
@@ -44,11 +44,11 @@ exports.login = async (request) => {
       throw new Kamora.Error(error.name.INTERNAL_SERVER_ERROR)
     })
   if (!user) {
-    throw new Kamora.Error(error.name.NOT_EXIST, '', 400)
+    throw new Kamora.Error(error.name.NOT_EXIST)
   }
 
   if (!bcrypt.compareSync(password, user.password)) {
-    throw new Kamora.Error(error.name.INVALID_AUTHENTICATION, '', 400)
+    throw new Kamora.Error(error.name.REQUEST_FAILED, '用户名或密码错误')
   }
 
   const token = jwt.sign({
