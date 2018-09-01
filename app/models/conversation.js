@@ -4,6 +4,7 @@ const moment = require('moment')
 const Schema = Kamora.Database.Schema
 
 const conversationSchema = new Schema({
+  cid: String,
   name: String,
   creator: String,
   members: [String],

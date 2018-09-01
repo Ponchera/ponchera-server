@@ -6,13 +6,56 @@ const User = Kamora.Database.model('user')
 const redis = Kamora.redis
 
 exports.sendMessage = async (io, payloads) => {
-  const conversationId = payloads[0].conversation_id
+  let conversation
+  const from = payloads[0].from
+  const target = payloads[0].target
+  const targetType = payloads[0].target_type
 
-  const conversation = await Conversation
-    .findById(conversationId)
-    .catch(() => {
-      throw new Kamora.Error(error.name.INTERNAL_SERVER_ERROR)
+  // 判断是单聊还是群聊
+  if (targetType === 'user') {
+    // 查找消息发送者是否有同消息接收者的对话
+    const fromUser = await User
+      .findOne({ 'username': from })
+      .populate('conversations')
+      .catch(() => {
+        throw new Kamora.Error(error.name.INTERNAL_SERVER_ERROR)
+      })
+    const conversations = fromUser.conversations.filter((conversation) => {
+      return conversation.creator === target || conversation.cid === target
     })
+
+    if (conversations.length) {
+      // 找到对话，直接使用
+      conversation = conversations[0]
+    } else {
+      // 创建一个新对话
+      const newConversation = new Conversation({
+        cid: target,
+        creator: from,
+        members: [from, target]
+      })
+      conversation = await newConversation
+        .save()
+        .catch(() => {
+          throw new Kamora.Error(error.name.INTERNAL_SERVER_ERROR)
+        })
+
+      // 更新消息发送者和消息接收者的对话列表
+      fromUser.conversations = [...fromUser.conversations, conversation._id]
+      fromUser.save()
+      await User
+        .update({ username: target }, { $addToSet: { conversations: conversation._id } })
+        .catch(() => {
+          throw new Kamora.Error(error.name.INTERNAL_SERVER_ERROR)
+        })
+    }
+  } else {
+    conversation = await Conversation
+      .findOne({ cid: target })
+      .catch(() => {
+        throw new Kamora.Error(error.name.INTERNAL_SERVER_ERROR)
+      })
+  }
 
   const members = await User
     .find({ 'username': { $in: conversation.members } })
