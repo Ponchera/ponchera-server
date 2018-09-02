@@ -13,7 +13,7 @@ exports.sendMessage = async (io, payloads) => {
 
   // 判断是单聊还是群聊
   if (targetType === 'user') {
-    // 查找消息发送者是否有同消息接收者的对话
+    // 查找消息发送者是否有同消息接收者的聊天
     const fromUser = await User
       .findOne({ 'username': from })
       .populate('conversations')
@@ -25,10 +25,10 @@ exports.sendMessage = async (io, payloads) => {
     })
 
     if (conversations.length) {
-      // 找到对话，直接使用
+      // 找到聊天，直接使用
       conversation = conversations[0]
     } else {
-      // 创建一个新对话
+      // 创建一个新聊天
       const newConversation = new Conversation({
         cid: target,
         creator: from,
@@ -40,7 +40,7 @@ exports.sendMessage = async (io, payloads) => {
           throw new Kamora.Error(error.name.INTERNAL_SERVER_ERROR)
         })
 
-      // 更新消息发送者和消息接收者的对话列表
+      // 更新消息发送者和消息接收者的聊天列表
       fromUser.conversations = [...fromUser.conversations, conversation._id]
       fromUser.save()
       await User

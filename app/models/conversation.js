@@ -5,6 +5,7 @@ const Schema = Kamora.Database.Schema
 
 const conversationSchema = new Schema({
   cid: String,
+  type: String,
   name: String,
   creator: String,
   members: [String],
@@ -38,7 +39,6 @@ conversationSchema.set('toJSON', {
   getters: true,
   virtuals: true,
   transform: (doc, ret, options) => {
-    ret.id = ret._id
     delete ret._id
   }
 })
