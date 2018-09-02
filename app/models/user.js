@@ -14,7 +14,7 @@ const userSchema = new Schema({
   },
   contact_requests: [{
     username: String,
-    accepted: Boolean,
+    status: String,
     timestamp: Number
   }],
   contacts: [String],
