@@ -14,6 +14,7 @@ const conversationSchema = new Schema({
     ref: 'application'
   },
   ext: {},
+  is_new: Boolean,
   created_at: {
     type: Date,
     default: Date.now(),
@@ -40,6 +41,7 @@ conversationSchema.set('toJSON', {
   virtuals: true,
   transform: (doc, ret, options) => {
     delete ret._id
+    delete ret.is_new
   }
 })
 

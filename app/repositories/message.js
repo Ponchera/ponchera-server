@@ -32,7 +32,8 @@ exports.sendMessage = async (io, payloads) => {
       const newConversation = new Conversation({
         cid: target,
         creator: from,
-        members: [from, target]
+        members: [from, target],
+        is_new: false
       })
       conversation = await newConversation
         .save()
@@ -58,10 +59,24 @@ exports.sendMessage = async (io, payloads) => {
   }
 
   const members = await User
-    .find({ 'username': { $in: conversation.members } })
+    .find({ username: { $in: conversation.members } })
     .catch(() => {
       throw new Kamora.Error(error.name.INTERNAL_SERVER_ERROR)
     })
+
+  // 如果是新的聊天，给members的聊天列表中都添加一条记录
+  if (conversation.is_new) {
+    const membersWithoutCreator = conversation.members.filter((member) => {
+      return member !== conversation.creator
+    })
+    await User
+      .update({ username: { $in: membersWithoutCreator } }, { $addToSet: { conversations: conversation._id } })
+      .catch(() => {
+        throw new Kamora.Error(error.name.INTERNAL_SERVER_ERROR)
+      })
+    conversation.is_new = false
+    conversation.save()
+  }
 
   payloads = payloads.map((payload) => {
     payload.timestamp = Date.now()
