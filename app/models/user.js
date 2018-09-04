@@ -8,7 +8,11 @@ const userSchema = new Schema({
   password: String,
   nick: String,
   socket_id: String,
-  application_id: {
+  organization: {
+    type: Schema.Types.ObjectId,
+    ref: 'organization'
+  },
+  application: {
     type: Schema.Types.ObjectId,
     ref: 'application'
   },
@@ -23,6 +27,10 @@ const userSchema = new Schema({
     ref: 'conversation'
   }],
   is_online: Boolean,
+  roles: [{
+    type: Schema.Types.ObjectId,
+    ref: 'role'
+  }],
   created_at: {
     type: Date,
     default: Date.now(),

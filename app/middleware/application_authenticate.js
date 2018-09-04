@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken')
 const error = require('../../config/error')
 const jwtConfig = require('../../config/jwt')
 
-const User = Kamora.Database.model('user')
+const Application = Kamora.Database.model('application')
 
 module.exports = async (ctx, next) => {
   const token = ctx.get('Authorization')
@@ -14,16 +14,14 @@ module.exports = async (ctx, next) => {
   try {
     const decoded = await jwt.verify(token, jwtConfig.secret)
 
-    const user = await User
+    const application = await Application
       .findById(decoded.uid)
-      .populate('organization')
-      .populate('application')
       .catch(() => {
         throw new Kamora.Error(error.name.INTERNAL_SERVER_ERROR)
       })
 
     ctx.filter = ctx.filter || {}
-    ctx.filter.user = user
+    ctx.filter.application = application
   } catch (err) {
     if (err.name === 'TokenExpiredError') {
       throw new Kamora.Error(error.name.LOGIN_REQUIRED, '令牌已过期，请重新登录')

@@ -4,27 +4,28 @@ const utilService = require('../services/util')
 
 const Application = Kamora.Database.model('application')
 
-exports.create = async (request) => {
-  const name = request.body.name
-
-  const applicationExists = await Application
-    .findOne({ name })
-    .catch(() => {
-      throw new Kamora.Error(error.name.INTERNAL_SERVER_ERROR)
-    })
-  if (applicationExists) {
-    throw new Kamora.Error(error.name.ALREADY_EXISTS)
-  }
-
+exports.create = async (data) => {
   const application = new Application({
-    name,
-    secret: utilService.getRandomChar(false, 32)
+    name: data.name,
+    key: data.key,
+    secret: utilService.getRandomChar(false, 32),
+    organization: data.organization
   })
-  const applicationCreated = await application
+  const createdApplication = await application
     .save()
     .catch(() => {
       throw new Kamora.Error(error.name.INTERNAL_SERVER_ERROR)
     })
 
-  return applicationCreated
+  return createdApplication
+}
+
+exports.findBy = async (condition) => {
+  const application = await Application
+    .findOne(condition)
+    .catch(() => {
+      throw new Kamora.Error(error.name.INTERNAL_SERVER_ERROR)
+    })
+
+  return application
 }

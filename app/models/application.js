@@ -5,8 +5,10 @@ const Schema = Kamora.Database.Schema
 
 const applicationSchema = new Schema({
   name: String,
+  display_name: String,
+  key: String,
   secret: String,
-  organization_id: {
+  organization: {
     type: Schema.Types.ObjectId,
     ref: 'organization'
   },

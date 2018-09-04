@@ -3,11 +3,8 @@ const moment = require('moment')
 
 const Schema = Kamora.Database.Schema
 
-const organizationSchema = new Schema({
-  name: {
-    type: String,
-    unique: true
-  },
+const permissionSchema = new Schema({
+  name: String,
   display_name: String,
   created_at: {
     type: Date,
@@ -21,7 +18,7 @@ const organizationSchema = new Schema({
   }
 }, { versionKey: false })
 
-organizationSchema.pre('save', function (next) {
+permissionSchema.pre('save', function (next) {
   const time = Date.now()
   if (this.isNew) {
     this.created_at = time
@@ -30,7 +27,7 @@ organizationSchema.pre('save', function (next) {
   next()
 })
 
-organizationSchema.set('toJSON', {
+permissionSchema.set('toJSON', {
   getters: true,
   virtuals: true,
   transform: (doc, ret, options) => {
@@ -38,4 +35,4 @@ organizationSchema.set('toJSON', {
   }
 })
 
-module.exports = Kamora.Database.model('organization', organizationSchema)
+module.exports = Kamora.Database.model('permission', permissionSchema)

@@ -9,7 +9,7 @@ const conversationSchema = new Schema({
   name: String,
   creator: String,
   members: [String],
-  application_id: {
+  application: {
     type: Schema.Types.ObjectId,
     ref: 'application'
   },

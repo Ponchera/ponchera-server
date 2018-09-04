@@ -5,7 +5,7 @@ const Schema = Kamora.Database.Schema
 const messageSchema = new Schema({
   from: String,
   content: {},
-  conversation_id: {
+  conversation: {
     type: Schema.Types.ObjectId,
     ref: 'conversation'
   },
