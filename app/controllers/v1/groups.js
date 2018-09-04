@@ -34,7 +34,7 @@ router.push({
         type: 'group',
         creator,
         members,
-        application: request.user.application,
+        application: request.user.application.id,
         is_new: true
       })
 

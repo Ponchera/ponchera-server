@@ -21,7 +21,7 @@ router.push({
       const request = ctx.filter
       const target = request.body.target
 
-      const user = await userRepository.findBy({ username: target, application: request.user.application })
+      const user = await userRepository.findBy({ username: target, application: request.user.application.id })
       if (!user) {
         throw new Kamora.Error(error.name.NOT_EXIST)
       }
@@ -84,7 +84,7 @@ router.push({
       const target = request.body.target
       const status = request.body.status
 
-      const user = await userRepository.findBy({ username: target, application: request.user.application })
+      const user = await userRepository.findBy({ username: target, application: request.user.application.id })
       if (!user) {
         throw new Kamora.Error(error.name.NOT_EXIST)
       }
@@ -134,7 +134,7 @@ router.push({
       const request = ctx.filter
       const target = request.body.target
 
-      const user = await userRepository.findBy({ username: target, application: request.user.application })
+      const user = await userRepository.findBy({ username: target, application: request.user.application.id })
       if (!user) {
         throw new Kamora.Error(error.name.NOT_EXIST)
       }
