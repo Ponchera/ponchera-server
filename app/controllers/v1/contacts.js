@@ -9,30 +9,30 @@ const Validator = Kamora.Validator
 
 router.push({
   method: 'post',
-  path: '/request',
+  path: '/:username/request',
   processors: [
     authenticate,
     validate({
-      body: {
-        target: Validator.string().regex(/^[a-zA-Z0-9-_.]{3,30}$/).required()
+      params: {
+        username: Validator.string().regex(/^[a-zA-Z0-9-_.]{3,30}$/).required()
       }
     }),
     async (ctx, next) => {
       const request = ctx.filter
-      const target = request.body.target
+      const username = request.params.username
 
-      const user = await userRepository.findBy({ username: target, application: request.user.application.id })
+      const user = await userRepository.findBy({ username, application: request.user.application.id })
       if (!user) {
         throw new Kamora.Error(error.name.NOT_EXIST)
       }
 
       // 不能添加自己
-      if (request.user.username === target) {
+      if (request.user.username === username) {
         throw new Kamora.Error(error.name.INTERNAL_SERVER_ERROR)
       }
 
       // 不能重复添加
-      if (request.user.contacts.indexOf(target) >= 0) {
+      if (request.user.contacts.indexOf(username) >= 0) {
         throw new Kamora.Error(error.name.INTERNAL_SERVER_ERROR)
       }
 
@@ -70,27 +70,29 @@ router.push({
 
 router.push({
   method: 'post',
-  path: '/response',
+  path: '/:username/response',
   processors: [
     authenticate,
     validate({
+      params: {
+        username: Validator.string().regex(/^[a-zA-Z0-9-_.]{3,30}$/).required()
+      },
       body: {
-        target: Validator.string().regex(/^[a-zA-Z0-9-_.]{3,30}$/).required(),
         status: Validator.string().required()
       }
     }),
     async (ctx, next) => {
       const request = ctx.filter
-      const target = request.body.target
+      const username = request.params.username
       const status = request.body.status
 
-      const user = await userRepository.findBy({ username: target, application: request.user.application.id })
+      const user = await userRepository.findBy({ username, application: request.user.application.id })
       if (!user) {
         throw new Kamora.Error(error.name.NOT_EXIST)
       }
 
       let contactRequest = request.user.contact_requests.filter((item) => {
-        return item.username === target
+        return item.username === username
       })
       if (!contactRequest.length || contactRequest[0].status !== 'tbc') {
         throw new Kamora.Error(error.name.INTERNAL_SERVER_ERROR)
@@ -105,8 +107,8 @@ router.push({
         ...request.user.contact_requests.slice(i + 1)
       ]
       if (status === 'accepted') {
-        if (request.user.contacts.indexOf(target) < 0) {
-          request.user.contacts = [...request.user.contacts, target]
+        if (request.user.contacts.indexOf(username) < 0) {
+          request.user.contacts = [...request.user.contacts, username]
         }
         user.contacts = [...user.contacts, request.user.username]
         user.save()
@@ -122,30 +124,30 @@ router.push({
 
 router.push({
   method: 'delete',
-  path: '/',
+  path: '/:username',
   processors: [
     authenticate,
     validate({
-      body: {
-        target: Validator.string().regex(/^[a-zA-Z0-9-_.]{3,30}$/).required()
+      params: {
+        username: Validator.string().regex(/^[a-zA-Z0-9-_.]{3,30}$/).required()
       }
     }),
     async (ctx, next) => {
       const request = ctx.filter
-      const target = request.body.target
+      const username = request.params.username
 
-      const user = await userRepository.findBy({ username: target, application: request.user.application.id })
+      const user = await userRepository.findBy({ username, application: request.user.application.id })
       if (!user) {
         throw new Kamora.Error(error.name.NOT_EXIST)
       }
 
       // 不能删除自己
-      if (request.user.username === target) {
+      if (request.user.username === username) {
         throw new Kamora.Error(error.name.INTERNAL_SERVER_ERROR)
       }
 
       // 不能重复删除
-      const i = request.user.contacts.indexOf(target)
+      const i = request.user.contacts.indexOf(username)
       if (i < 0) {
         throw new Kamora.Error(error.name.INTERNAL_SERVER_ERROR)
       }
