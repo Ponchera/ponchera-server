@@ -2,8 +2,9 @@ const Kamora = require('kamora')
 const error = require('../../config/error')
 const conversationRepository = require('./conversation')
 
-const User = Kamora.Database.model('user')
 const redis = Kamora.redis
+const User = Kamora.Database.model('user')
+const Id = Kamora.Database.model('id')
 
 exports.sendMessage = async (io, userId, payloads) => {
   let conversation
@@ -20,7 +21,7 @@ exports.sendMessage = async (io, userId, payloads) => {
         throw new Kamora.Error(error.name.INTERNAL_SERVER_ERROR)
       })
     const conversations = fromUser.conversations.filter((conversation) => {
-      return conversation.creator === target || conversation.cid === target
+      return conversation.type === 'user' && (conversation.creator === target || conversation.members.indexOf(target) > 0)
     })
 
     if (conversations.length) {
@@ -28,8 +29,14 @@ exports.sendMessage = async (io, userId, payloads) => {
       conversation = conversations[0]
     } else {
       // 创建一个新聊天
+      const id = await Id
+        .findOneAndUpdate({ table: 'conversations' }, { $inc: { index: 1 } })
+        .catch(() => {
+          throw new Kamora.Error(error.name.INTERNAL_SERVER_ERROR)
+        })
+
       conversation = await conversationRepository.create({
-        cid: target,
+        cid: id.index,
         type: 'user',
         creator: fromUser.username,
         members: [fromUser.username, target],
