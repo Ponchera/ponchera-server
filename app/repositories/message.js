@@ -1,13 +1,12 @@
 const Kamora = require('kamora')
 const error = require('../../config/error')
+const conversationRepository = require('./conversation')
 
-const Conversation = Kamora.Database.model('conversation')
 const User = Kamora.Database.model('user')
 const redis = Kamora.redis
 
-exports.sendMessage = async (io, payloads) => {
+exports.sendMessage = async (io, userId, payloads) => {
   let conversation
-  const from = payloads[0].from
   const target = payloads[0].target
   const targetType = payloads[0].target_type
 
@@ -15,7 +14,7 @@ exports.sendMessage = async (io, payloads) => {
   if (targetType === 'user') {
     // 查找消息发送者是否有同消息接收者的聊天
     const fromUser = await User
-      .findOne({ 'username': from })
+      .findById(userId)
       .populate('conversations')
       .catch(() => {
         throw new Kamora.Error(error.name.INTERNAL_SERVER_ERROR)
@@ -29,33 +28,26 @@ exports.sendMessage = async (io, payloads) => {
       conversation = conversations[0]
     } else {
       // 创建一个新聊天
-      const newConversation = new Conversation({
+      conversation = await conversationRepository.create({
         cid: target,
-        creator: from,
-        members: [from, target],
+        type: 'user',
+        creator: fromUser.username,
+        members: [fromUser.username, target],
+        application: fromUser.application,
         is_new: false
       })
-      conversation = await newConversation
-        .save()
-        .catch(() => {
-          throw new Kamora.Error(error.name.INTERNAL_SERVER_ERROR)
-        })
 
       // 更新消息发送者和消息接收者的聊天列表
-      fromUser.conversations = [...fromUser.conversations, conversation._id]
+      fromUser.conversations = [...fromUser.conversations, conversation.id]
       fromUser.save()
       await User
-        .update({ username: target }, { $addToSet: { conversations: conversation._id } })
+        .update({ username: target }, { $addToSet: { conversations: conversation.id } })
         .catch(() => {
           throw new Kamora.Error(error.name.INTERNAL_SERVER_ERROR)
         })
     }
   } else {
-    conversation = await Conversation
-      .findOne({ cid: target })
-      .catch(() => {
-        throw new Kamora.Error(error.name.INTERNAL_SERVER_ERROR)
-      })
+    conversation = await conversationRepository.findBy({ cid: target })
   }
 
   const members = await User
@@ -70,7 +62,7 @@ exports.sendMessage = async (io, payloads) => {
       return member !== conversation.creator
     })
     await User
-      .update({ username: { $in: membersWithoutCreator } }, { $addToSet: { conversations: conversation._id } })
+      .update({ username: { $in: membersWithoutCreator } }, { $addToSet: { conversations: conversation.id } })
       .catch(() => {
         throw new Kamora.Error(error.name.INTERNAL_SERVER_ERROR)
       })
@@ -97,7 +89,7 @@ exports.sendMessage = async (io, payloads) => {
   })
 }
 
-exports.sendOfflineMessage = async (io, userId) => {
+exports.sendOfflineMessage = async (socket, userId) => {
   let redisKey = `message:${userId}`
   let queue = await redis.lrange(redisKey, 0, -1)
   if (!queue.length) {
@@ -121,7 +113,7 @@ exports.sendOfflineMessage = async (io, userId) => {
   }
 
   for (let value of payloadsDict.values()) {
-    io
+    socket
       .emit('message', value)
   }
 

@@ -12,7 +12,7 @@ io.sockets
     timeout: 15000
   }))
   .on('authenticated', function (socket) {
-    userRepository.bindSocketIdToUser(socket.decoded_token.uid, socket.id)
+    userRepository.bindSocketIdToUser(socket.id, socket.decoded_token.uid)
       .then(() => {
         messageRepository.sendOfflineMessage(socket, socket.decoded_token.uid)
       })
@@ -20,7 +20,7 @@ io.sockets
       })
 
     socket.on('message', function (payloads) {
-      messageRepository.sendMessage(io, payloads)
+      messageRepository.sendMessage(io, socket.decoded_token.uid, payloads)
         .catch(() => {
         })
     })

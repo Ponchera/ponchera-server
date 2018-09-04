@@ -44,7 +44,7 @@ exports.switchOnlineStatus = async (socketId, status) => {
     })
 }
 
-exports.bindSocketIdToUser = async (userId, socketId) => {
+exports.bindSocketIdToUser = async (socketId, userId) => {
   await User
     .findByIdAndUpdate(userId, {
       socket_id: socketId,
