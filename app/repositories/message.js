@@ -7,19 +7,19 @@ const User = Kamora.Database.model('user')
 const Id = Kamora.Database.model('id')
 
 exports.sendMessage = async (io, userId, payloads) => {
-  let conversation
   const target = payloads[0].target
-  const targetType = payloads[0].target_type
 
-  // 判断是单聊还是群聊
-  if (targetType === 'user') {
-    // 查找消息发送者是否有同消息接收者的聊天
+  let conversation = await conversationRepository.findBy({ cid: target })
+  // 根据cid没搜索到聊天，视为单聊
+  if (!conversation) {
     const fromUser = await User
       .findById(userId)
       .populate('conversations')
       .catch(() => {
         throw new Kamora.Error(error.name.INTERNAL_SERVER_ERROR)
       })
+
+    // 查找消息发送者和消息接收者是否有共同的聊天
     const conversations = fromUser.conversations.filter((conversation) => {
       return conversation.type === 'user' && (conversation.creator === target || conversation.members.indexOf(target) > 0)
     })
@@ -53,8 +53,6 @@ exports.sendMessage = async (io, userId, payloads) => {
           throw new Kamora.Error(error.name.INTERNAL_SERVER_ERROR)
         })
     }
-  } else {
-    conversation = await conversationRepository.findBy({ cid: target })
   }
 
   const members = await User
