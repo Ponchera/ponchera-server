@@ -18,6 +18,7 @@ module.exports = async (ctx, next) => {
       .findById(decoded.uid)
       .populate('organization')
       .populate('application')
+      .populate('conversations')
       .catch(() => {
         throw new Kamora.Error(error.name.INTERNAL_SERVER_ERROR)
       })

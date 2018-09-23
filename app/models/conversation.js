@@ -13,7 +13,6 @@ const conversationSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'application'
   },
-  ext: {},
   is_new: Boolean,
   created_at: {
     type: Date,

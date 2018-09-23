@@ -20,7 +20,7 @@ io.sockets
       })
 
     socket.on('message', function (payloads) {
-      messageRepository.sendMessage(io, socket.decoded_token.uid, payloads)
+      messageRepository.sendMessage(io, payloads)
         .catch(() => {
         })
     })

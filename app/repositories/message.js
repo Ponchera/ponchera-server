@@ -4,55 +4,13 @@ const conversationRepository = require('./conversation')
 
 const redis = Kamora.redis
 const User = Kamora.Database.model('user')
-const Id = Kamora.Database.model('id')
 
-exports.sendMessage = async (io, userId, payloads) => {
-  const target = payloads[0].target
+exports.sendMessage = async (io, payloads) => {
+  const cid = payloads[0].cid
 
-  let conversation = await conversationRepository.findBy({ cid: target })
-  // 根据cid没搜索到聊天，视为单聊
+  const conversation = await conversationRepository.findBy({ cid })
   if (!conversation) {
-    const fromUser = await User
-      .findById(userId)
-      .populate('conversations')
-      .catch(() => {
-        throw new Kamora.Error(error.name.INTERNAL_SERVER_ERROR)
-      })
-
-    // 查找消息发送者和消息接收者是否有共同的聊天
-    const conversations = fromUser.conversations.filter((conversation) => {
-      return conversation.type === 'user' && (conversation.creator === target || conversation.members.indexOf(target) > 0)
-    })
-
-    if (conversations.length) {
-      // 找到聊天，直接使用
-      conversation = conversations[0]
-    } else {
-      // 创建一个新聊天
-      const id = await Id
-        .findOneAndUpdate({ table: 'conversations' }, { $inc: { index: 1 } })
-        .catch(() => {
-          throw new Kamora.Error(error.name.INTERNAL_SERVER_ERROR)
-        })
-
-      conversation = await conversationRepository.create({
-        cid: id.index,
-        type: 'user',
-        creator: fromUser.username,
-        members: [fromUser.username, target],
-        application: fromUser.application,
-        is_new: false
-      })
-
-      // 更新消息发送者和消息接收者的聊天列表
-      fromUser.conversations = [...fromUser.conversations, conversation.id]
-      fromUser.save()
-      await User
-        .update({ username: target }, { $addToSet: { conversations: conversation.id } })
-        .catch(() => {
-          throw new Kamora.Error(error.name.INTERNAL_SERVER_ERROR)
-        })
-    }
+    return
   }
 
   const members = await User
