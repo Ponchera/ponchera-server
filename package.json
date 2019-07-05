@@ -1,5 +1,5 @@
 {
-  "name": "im-server",
+  "name": "ponchera-server",
   "version": "0.1.0",
   "description": "kamora 模板项目",
   "main": "index.js",
@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/AidenChen/im-server.git"
+    "url": "git+https://github.com/Ponchera/ponchera-server.git"
   },
   "author": "AidenChen",
   "license": "MIT",
