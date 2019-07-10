@@ -22,13 +22,14 @@ async function formatResponse (ctx, next) {
     await next()
   } catch (err) {
     if (err instanceof Kamora.Error) {
-      err = formatError(err)
+      const formatedError = formatError(err)
 
-      ctx.status = err.status
+      ctx.status = formatedError.status
       ctx.body = {
-        code: err.code,
-        message: err.message
+        code: formatedError.code,
+        message: formatedError.message
       }
+      throw formatedError
     }
     throw err
   }
