@@ -14,6 +14,9 @@ const getUserFromToken = async (token) => {
     .catch(() => {
       throw new Kamora.Error(error.name.INTERNAL_SERVER_ERROR)
     })
+  if (!user) {
+    throw new Kamora.Error(error.name.NOT_EXIST)
+  }
   return user
 }
 
