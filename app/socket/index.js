@@ -1,5 +1,8 @@
 const Kamora = require('kamora')
-const io = require('socket.io')(Kamora.server)
+const io = require('socket.io')(Kamora.server, {
+  pingTimeout: 30000,
+  pingInterval: 30000
+})
 const socketioJwt = require('socketio-jwt')
 const jwtConfig = require('../../config/jwt')
 const userRepository = require('../repositories/user')
